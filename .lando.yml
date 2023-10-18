@@ -1,0 +1,32 @@
+name: govcms-lando-demo
+recipe: lagoon
+services:
+  cli:
+    volumes:
+    - ./themes:/app/web/themes/custom
+    - ./files:/app/web/sites/default/files:delegated
+    - ./tests/behat/features:/app/tests/behat/features
+    - ./tests/behat/screenshots:/app/tests/behat/screenshots
+    - ./tests/phpunit/tests:/app/tests/phpunit/tests
+    - ./config:/app/config
+  php:
+    volumes:
+    - ./themes:/app/web/themes/custom
+    - ./files:/app/web/sites/default/files:delegated
+    - ./tests/behat/features:/app/tests/behat/features
+    - ./tests/behat/screenshots:/app/tests/behat/screenshots
+    - ./tests/phpunit/tests:/app/tests/phpunit/tests
+    - ./config:/app/config
+  nginx:
+    volumes:
+    - ./themes:/app/web/themes/custom
+    - ./files:/app/web/sites/default/files:delegated
+
+config:
+  flavor: drupal
+  build:
+    - mkdir -p /app/web/sites/default/files/private/tmp
+    - /app/vendor/bin/govcms-db-update
+    - /app/vendor/bin/govcms-config-import
+    - /app/vendor/bin/govcms-cache-rebuild
+    - /app/vendor/bin/govcms-enable_modules

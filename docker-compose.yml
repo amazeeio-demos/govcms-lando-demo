@@ -2,15 +2,12 @@ version: '2.3'
 
 # This value intentionally matches the project name on Lagoon.
 # It is used to name the CLI_IMAGE to use as a build arg locally.
-x-lagoon-project: &lagoon-project
-  govcms-lando-demo
+x-lagoon-project: &lagoon-project govcms-lando-demo
 
-x-lagoon-local-dev-url: &lagoon-local-dev-url
-  http://govcms-lando-demo.docker.amazee.io
+x-lagoon-local-dev-url: &lagoon-local-dev-url http://govcms-lando-demo.docker.amazee.io
 
 # See GOVCMS_IMAGE_VERSION in "Variables" at https://github.com/govCMS/govCMS8/wiki
-x-govcms-image-version: &govcms-image-version
-  ${GOVCMS_IMAGE_VERSION:-10.x-latest}
+x-govcms-image-version: &govcms-image-version ${GOVCMS_IMAGE_VERSION:-10.x-latest}
 
 x-volumes: &default-volumes
   volumes:
@@ -57,6 +54,7 @@ services:
       lagoon.type: cli-persistent
       lagoon.persistent.name: nginx
       lagoon.persistent: /app/web/sites/default/files/
+      lando.type: php-cli-drupal
     << : *default-volumes
     environment:
       << : *default-environment
@@ -75,6 +73,7 @@ services:
         SITE_AUDIT_VERSION: ${SITE_AUDIT_VERSION:-7.x-3.x}
     labels:
       lagoon.type: none
+      lando.type: php-cli-drupal
     << : *default-volumes
     depends_on:
       - cli
@@ -91,6 +90,7 @@ services:
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.persistent: /app/web/sites/default/files/
+      lando.type: nginx-drupal
     << : *default-volumes
     depends_on:
       - cli
@@ -112,6 +112,7 @@ services:
       lagoon.type: nginx-php-persistent
       lagoon.name: nginx
       lagoon.persistent: /app/web/sites/default/files/
+      lando.type: php-fpm
     << : *default-volumes
     depends_on:
       - cli
@@ -123,6 +124,7 @@ services:
     labels:
       lagoon.type: mariadb
       lagoon.image: govcms/mariadb-drupal:10.x-latest
+      lando.type: mariadb-drupal
     ports:
       - "3306" # Find port on host with `docker-compose port mariadb 3306`
     environment:
@@ -132,6 +134,7 @@ services:
     image: govcms/av:latest
     labels:
       lagoon.type: none
+      lando.type: none
 
   # Uncomment to enable solr.
   # solr:
@@ -156,6 +159,7 @@ services:
       - test
     labels:
       lagoon.type: none
+      lando.type: none
     << : *default-volumes
 
 networks:
