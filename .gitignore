@@ -29,3 +29,7 @@ console
 
 # Local development tools.
 docker-compose.override.yml
+# Added by the scaffold provisioner.
+web/
+scripts/
+drush/
