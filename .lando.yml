@@ -2,31 +2,32 @@ name: govcms-lando-demo
 recipe: lagoon
 services:
   cli:
+    app_mount: false
     volumes:
-    - ./themes:/app/web/themes/custom
-    - ./files:/app/web/sites/default/files:delegated
-    - ./tests/behat/features:/app/tests/behat/features
-    - ./tests/behat/screenshots:/app/tests/behat/screenshots
-    - ./tests/phpunit/tests:/app/tests/phpunit/tests
-    - ./config:/app/config
+    - ${PWD}/themes:/app/web/themes/custom
+    - ${PWD}/files:/app/web/sites/default/files:delegated
+    - ${PWD}/tests/behat/features:/app/tests/behat/features
+    - ${PWD}/tests/behat/screenshots:/app/tests/behat/screenshots
+    - ${PWD}/tests/phpunit/tests:/app/tests/phpunit/tests
+    - ${PWD}/config:/app/config
+    build:
+      - mkdir -p /app/web/sites/default/files/private/tmp
+      - wait-for mariadb:3306
+      - /app/vendor/bin/govcms-db-update
+      - /app/vendor/bin/govcms-config-import
+      - /app/vendor/bin/govcms-cache-rebuild
+      - /app/vendor/bin/govcms-enable_modules
   php:
+    app_mount: false
     volumes:
-    - ./themes:/app/web/themes/custom
-    - ./files:/app/web/sites/default/files:delegated
-    - ./tests/behat/features:/app/tests/behat/features
-    - ./tests/behat/screenshots:/app/tests/behat/screenshots
-    - ./tests/phpunit/tests:/app/tests/phpunit/tests
-    - ./config:/app/config
+    - ${PWD}/themes:/app/web/themes/custom
+    - ${PWD}/files:/app/web/sites/default/files:delegated
+    - ${PWD}/tests/behat/features:/app/tests/behat/features
+    - ${PWD}/tests/behat/screenshots:/app/tests/behat/screenshots
+    - ${PWD}/tests/phpunit/tests:/app/tests/phpunit/tests
+    - ${PWD}/config:/app/config
   nginx:
+    app_mount: false
     volumes:
-    - ./themes:/app/web/themes/custom
-    - ./files:/app/web/sites/default/files:delegated
-
-config:
-  flavor: drupal
-  build:
-    - mkdir -p /app/web/sites/default/files/private/tmp
-    - /app/vendor/bin/govcms-db-update
-    - /app/vendor/bin/govcms-config-import
-    - /app/vendor/bin/govcms-cache-rebuild
-    - /app/vendor/bin/govcms-enable_modules
+    - ${PWD}/themes:/app/web/themes/custom
+    - ${PWD}/files:/app/web/sites/default/files:delegated

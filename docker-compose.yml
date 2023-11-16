@@ -22,6 +22,9 @@ x-volumes-paas: &paas-volumes
   volumes:
     - .:/app:delegated
 
+volumes:
+  db: {}
+
 x-environment: &default-environment
   STAGE_FILE_PROXY_URL: ${STAGE_FILE_PROXY_URL:-}
   LAGOON_ENVIRONMENT_TYPE: ${LAGOON_ENVIRONMENT_TYPE:-}
@@ -56,6 +59,8 @@ services:
       lagoon.persistent: /app/web/sites/default/files/
       lando.type: php-cli-drupal
     << : *default-volumes
+    depends_on:
+      - mariadb
     environment:
       << : *default-environment
     # Mount volumes from Pygmy to inject host SSH key into container.
@@ -71,9 +76,9 @@ services:
         CLI_IMAGE: *lagoon-project
         GOVCMS_IMAGE_VERSION: *govcms-image-version
         SITE_AUDIT_VERSION: ${SITE_AUDIT_VERSION:-7.x-3.x}
-    labels:
-      lagoon.type: none
-      lando.type: php-cli-drupal
+    # labels:
+    #   lagoon.type: none
+    #   lando.type: php-cli-drupal
     << : *default-volumes
     depends_on:
       - cli
@@ -129,12 +134,14 @@ services:
       - "3306" # Find port on host with `docker-compose port mariadb 3306`
     environment:
       << : *default-environment
+    volumes:
+      - db:/var/lib/mysql
 
   av:
     image: govcms/av:latest
-    labels:
-      lagoon.type: none
-      lando.type: none
+    # labels:
+    #   lagoon.type: none
+    #   lando.type: none
 
   # Uncomment to enable solr.
   # solr:
@@ -157,9 +164,9 @@ services:
     shm_size: '1gb'
     depends_on:
       - test
-    labels:
-      lagoon.type: none
-      lando.type: none
+    # labels:
+    #   lagoon.type: none
+    #   lando.type: none
     << : *default-volumes
 
 networks:
